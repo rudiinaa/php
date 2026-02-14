@@ -1,13 +1,11 @@
+
+
 <?php 
 session_start();
 
 include_once("config.php");
 
-if(empty($_SESSION['username'])){
-    //header("Location: login.php");
-}
-
-
+if(empty($_SESSIO
 $sql="SELECT  * from users";
 
 $selectedUsers = $conn->prepare($sql);
