@@ -1,60 +1,137 @@
+<?php
+// login.php
+// Start the session if you plan to use session variables
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Digital School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        html, body {
-            height: 100%;
+        /* Reset & general */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
+
         body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
-            background-color: #e4dedeff;
+            align-items: center;
         }
-        .form-login {
+
+        /* Login container */
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 360px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            text-align: center;
         }
-        .form-floating {
+
+        /* Heading */
+        .login-container h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #333333;
+        }
+
+        /* Inputs */
+        .login-container input {
+            width: 100%;
+            padding: 12px 15px;
             margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
-        button {
-            margin-top: 10px;
+
+        .login-container input:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 5px rgba(37, 117, 252, 0.5);
+            outline: none;
+        }
+
+        /* Button */
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            background-color: #2575fc;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-container button:hover {
+            background-color: #1a5edb;
+        }
+
+        /* Links */
+        .login-container p {
+            margin-top: 20px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .login-container p a {
+            color: #2575fc;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-container p a:hover {
+            text-decoration: underline;
+        }
+
+        /* Error message */
+        .error-message {
+            color: #d93025;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="form-login">
-        <h2 class="text-center mb-4">Login</h2>
-        <form action="loginLogic.php" method="POST">
-            <div class="form-floating">
-                <input type="email" class="form-control" id="floatingEmail" name="email" placeholder="Email" required>
-                <label for="floatingEmail">Email</label>
-            </div>
-            <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required>
-                <label for="floatingPassword">Password</label>
-            </div>
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" value="" id="rememberMe" name="remember">
-                <label class="form-check-label" for="rememberMe">
-                    Remember me
-                </label>
-            </div>
-            <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
+    <div class="login-container">
+        <h2>Login</h2>
+
+        <!-- Display error if login failed -->
+        <?php
+        if(isset($_SESSION['login_error'])) {
+            echo '<div class="error-message">'.$_SESSION['login_error'].'</div>';
+            unset($_SESSION['login_error']); // Clear error after displaying
+        }
+        ?>
+
+        <form method="post" action="loginLogic.php">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit" name="submit">Login</button>
         </form>
-        <p class="mt-3 text-center">
-            Don't have an account? <a href="register.php">Sign up</a>
-        </p>
+
+        <p>No account? <a href="register.php">Register</a></p>
+        <p class="mt-3 text-muted">Digital School &copy; 2023</p>
     </div>
 </body>
 </html>
-

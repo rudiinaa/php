@@ -1,50 +1,41 @@
-<?php
-session_start();
-include_once("config.php"); 
+<?php 
+require 'config.php';
+echo("hello");
 
-if (isset($_POST['submit'])) {
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
+if(isset($_POST['submit'])){
+    $email= $_POST['email'];
+    $password= $_POST['password'];
 
-    if (empty($username) || empty($password)) {
-        echo "<p style='color:red;'>Please fill in all fields.</p>";
-        echo "<a href='login.php'>Go back to login</a>";
-        exit();
-    }
+    if(empty($email) || empty($password))
+    {
+        echo("hello1");
+        echo "fill all the fields!";
+        header("refresh:2; url=sdfads.php");
+    }else{
 
-    try {
-        $sql = "SELECT id, emri, username, email, password, is_admin FROM users WHERE username = :username LIMIT 1";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':username', $username);
-        $stmt->execute();
+        echo("hello2");
+        $sql = "SELECT * FROM users where email=:email";
+        $insertSQL = $conn->prepare( $sql);
+        $insertSQL->bindParam(':email',$email);
 
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $insertSQL->execute();
 
-        if (!$user) {
-            echo "<p style='color:red;'>The user does not exist.</p>";
-            echo "<a href='login.php'>Go back to login</a>";
-        } else {
-            if (password_verify($password, $user['password'])) {
-                
-                $_SESSION['id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['email'] = $user['email'];
-                $_SESSION['emri'] = $user['emri'];
-                $_SESSION['is_admin'] = $user['is_admin'];
-
-                header('Location: dashboard.php');
-                exit();
-            } else {
-                echo "<p style='color:red;'>The password is not valid.</p>";
-                echo "<a href='login.php'>Go back to login</a>";
+        if($insertSQL ->rowCount()>0){
+            $data =  $insertSQL->fetch();
+            if(password_verify($password,$data["password"])){
+                $_SESSION['email']=$data['email'];
+                $_SESSION['id']=$data['id'];
+                header("location: dashboard.php");
+            }else{
+                echo"password is incorrect";
+                header("refresh:2; url=login.php");
             }
         }
-    } catch (PDOException $e) {
-        echo "<p style='color:red;'>Database error: " . $e->getMessage() . "</p>";
+        else {
+            echo "user not found !!1";
+        }
     }
-} else {
-    
-    header("Location: login.php");
-    exit();
+
 }
+
 ?>
