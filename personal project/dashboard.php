@@ -1,29 +1,29 @@
-
-
 <?php
 session_start();
-require_once "config.php"; // your database connection file
+include_once('config.php');
 
-// Protect page
-if (!isset($_SESSION['user_id'])) {
+
+if (!isset($_SESSION['name'])) {
     header("Location: login.php");
     exit();
 }
+// ✅ Get total students
+$stmtStudents = $conn->prepare("SELECT COUNT(*) as total FROM students");
+$stmtStudents->execute();
+$studentData = $stmtStudents->fetch(PDO::FETCH_ASSOC);
+$totalStudents = $studentData['total'];
 
-// Get students
-$result = mysqli_query($conn, "SELECT * FROM students");
-$students = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-// Total students
-$totalStudents = count($students);
-
-// Total users
-$userResult = mysqli_query($conn, "SELECT COUNT(*) as total FROM users");
-$userData = mysqli_fetch_assoc($userResult);
+// ✅ Get total users
+$stmtUsers = $conn->prepare("SELECT COUNT(*) as total FROM users");
+$stmtUsers->execute();
+$userData = $stmtUsers->fetch(PDO::FETCH_ASSOC);
 $totalUsers = $userData['total'];
+
+// ✅ Get all students for table
+$stmtAll = $conn->prepare("SELECT * FROM students ORDER BY id DESC");
+$stmtAll->execute();
+$students = $stmtAll->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -42,6 +42,11 @@ body {
     background:#2c3e50;
     color:white;
     padding:15px;
+}
+
+.navbar a {
+    color:white;
+    text-decoration:none;
 }
 
 .container {
@@ -77,6 +82,7 @@ th, td {
 
 .actions a {
     margin-right:8px;
+    text-decoration:none;
 }
 </style>
 </head>
@@ -84,8 +90,8 @@ th, td {
 <body>
 
 <div class="navbar">
-    Welcome, <?= htmlspecialchars($_SESSION['user_name']) ?> |
-    <a href="logout.php" style="color:#fff;">Logout</a>
+    Welcome, <?= htmlspecialchars($_SESSION['name']) ?> |
+    <a href="logout.php">Logout</a>
 </div>
 
 <div class="container">
@@ -120,20 +126,25 @@ th, td {
             <th>Actions</th>
         </tr>
 
-        <?php foreach ($students as $s): ?>
-        <tr>
-            <td><?= $s['id'] ?></td>
-            <td><?= htmlspecialchars($s['fullname']) ?></td>
-            <td><?= htmlspecialchars($s['email']) ?></td>
-            <td><?= htmlspecialchars($s['phone']) ?></td>
-            <td class="actions">
-                <a href="edit_student.php?id=<?= $s['id'] ?>">✏️ Edit</a>
-                <a href="delete_student.php?id=<?= $s['id'] ?>"
-                   onclick="return confirm('Delete this student?')">🗑 Delete</a>
-            </td>
-        </tr>
-        <?php endforeach; ?>
-
+        <?php if (count($students) > 0): ?>
+            <?php foreach ($students as $s): ?>
+            <tr>
+                <td><?= $s['id'] ?></td>
+                <td><?= htmlspecialchars($s['fullname']) ?></td>
+                <td><?= htmlspecialchars($s['email']) ?></td>
+                <td><?= htmlspecialchars($s['phone']) ?></td>
+                <td class="actions">
+                    <a href="edit_student.php?id=<?= $s['id'] ?>">✏️ Edit</a>
+                    <a href="delete_student.php?id=<?= $s['id'] ?>"
+                       onclick="return confirm('Delete this student?')">🗑 Delete</a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="5">No students found.</td>
+            </tr>
+        <?php endif; ?>
     </table>
 
 </div>

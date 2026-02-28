@@ -1,41 +1,46 @@
-<?php 
+<?php
+session_start();   // REQUIRED
 require 'config.php';
-echo("hello");
 
 if(isset($_POST['submit'])){
-    $email= $_POST['email'];
-    $password= $_POST['password'];
 
-    if(empty($email) || empty($password))
-    {
-        echo("hello1");
-        echo "fill all the fields!";
-        header("refresh:2; url=sdfads.php");
-    }else{
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-        echo("hello2");
-        $sql = "SELECT * FROM users where email=:email";
-        $insertSQL = $conn->prepare( $sql);
-        $insertSQL->bindParam(':email',$email);
-
-        $insertSQL->execute();
-
-        if($insertSQL ->rowCount()>0){
-            $data =  $insertSQL->fetch();
-            if(password_verify($password,$data["password"])){
-                $_SESSION['email']=$data['email'];
-                $_SESSION['id']=$data['id'];
-                header("location: dashboard.php");
-            }else{
-                echo"password is incorrect";
-                header("refresh:2; url=login.php");
-            }
-        }
-        else {
-            echo "user not found !!1";
-        }
+    if(empty($email) || empty($password)){
+        echo "Fill all the fields!";
+        header("refresh:2; url=login.php");
+        exit();
     }
 
-}
+    $sql = "SELECT * FROM users WHERE email = :email";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
 
+    if($stmt->rowCount() > 0){
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(password_verify($password, $data["password"])){
+
+            $_SESSION['email'] = $data['email'];
+            $_SESSION['name']  = $data['name'];
+            $_SESSION['id']    = $data['id'];
+
+            header("Location: dashboard.php");
+            exit(); // IMPORTANT
+
+        } else {
+            echo "Password is incorrect";
+            header("refresh:2; url=login.php");
+            exit();
+        }
+
+    } else {
+        echo "User not found!";
+        header("refresh:2; url=login.php");
+        exit();
+    }
+}
 ?>
