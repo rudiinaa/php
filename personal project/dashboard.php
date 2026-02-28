@@ -1,5 +1,30 @@
 
 
+<?php
+session_start();
+require_once "config.php"; // your database connection file
+
+// Protect page
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// Get students
+$result = mysqli_query($conn, "SELECT * FROM students");
+$students = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+// Total students
+$totalStudents = count($students);
+
+// Total users
+$userResult = mysqli_query($conn, "SELECT COUNT(*) as total FROM users");
+$userData = mysqli_fetch_assoc($userResult);
+$totalUsers = $userData['total'];
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,7 +92,6 @@ th, td {
 
     <h2>📊 Dashboard</h2>
 
-    <!-- statistika -->
     <div class="cards">
         <div class="card">
             <h3>Total Students</h3>
